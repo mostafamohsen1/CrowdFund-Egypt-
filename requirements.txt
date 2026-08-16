@@ -1,0 +1,6 @@
+Django>=6.0.0,<7.0.0
+django-crispy-forms>=2.0
+crispy-bootstrap5>=2024.2
+Pillow>=10.0.0
+requests>=2.31.0
+gunicorn>=21.2.0
