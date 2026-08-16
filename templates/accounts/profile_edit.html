@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile | CrowdFund Egypt{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-dark text-white p-4 text-center">
+                    <h3 class="fw-bold mb-1"><i class="bi bi-pencil-square text-accent me-2"></i> Edit Profile Information</h3>
+                    <p class="small text-muted mb-0">Update your personal details, avatar, and social links</p>
+                </div>
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Read-only Email Field -->
+                        <div class="mb-4 p-3 bg-light rounded-3 border">
+                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1">Email Address (Read-Only)</label>
+                            <input type="email" class="form-control bg-white text-muted" value="{{ user.email }}" disabled readonly>
+                            <div class="form-text small text-info"><i class="bi bi-info-circle me-1"></i> As per system security policy, account email address cannot be modified.</div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label fw-semibold">First Name</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label fw-semibold">Last Name</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <label for="{{ form.phone_number.id_for_label }}" class="form-label fw-semibold">Mobile Phone (Egyptian)</label>
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}<div class="text-danger small mt-1">{{ form.phone_number.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <div class="mt-3">
+                            <label for="{{ form.profile_picture.id_for_label }}" class="form-label fw-semibold">Profile Picture</label>
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <img src="{{ user.profile_picture.url }}" alt="{{ user.first_name }}" class="rounded-circle border" width="60" height="60" style="object-fit: cover;">
+                                <div class="flex-grow-1">
+                                    {{ form.profile_picture }}
+                                </div>
+                            </div>
+                            {% if form.profile_picture.errors %}<div class="text-danger small mt-1">{{ form.profile_picture.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                <label for="{{ form.birthdate.id_for_label }}" class="form-label fw-semibold">Birthdate (Optional)</label>
+                                {{ form.birthdate }}
+                                {% if form.birthdate.errors %}<div class="text-danger small mt-1">{{ form.birthdate.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.country.id_for_label }}" class="form-label fw-semibold">Country (Optional)</label>
+                                {{ form.country }}
+                                {% if form.country.errors %}<div class="text-danger small mt-1">{{ form.country.errors.0 }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <label for="{{ form.facebook_profile.id_for_label }}" class="form-label fw-semibold">Facebook Profile Link (Optional)</label>
+                            {{ form.facebook_profile }}
+                            {% if form.facebook_profile.errors %}<div class="text-danger small mt-1">{{ form.facebook_profile.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-cf-primary px-4">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In | CrowdFund Egypt{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-dark text-white p-4 text-center">
+                    <h3 class="fw-bold mb-1"><i class="bi bi-box-arrow-in-right text-accent me-2"></i> Welcome Back</h3>
+                    <p class="small text-muted mb-0">Sign in to manage your campaigns and donations</p>
+                </div>
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">Email Address</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold mb-0">Password</label>
+                                <a href="{% url 'password_reset' %}" class="small text-primary text-decoration-none">Forgot Password?</a>
+                            </div>
+                            {{ form.password }}
+                            {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-cf-primary btn-lg">
+                                Log In
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light p-3 text-center small text-muted">
+                    Don't have an account yet? <a href="{% url 'register' %}" class="fw-bold text-primary">Register Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark navbar-cf sticky-top py-3">
+    <div class="container">
+        <!-- Brand Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+            <i class="bi bi-rocket-takeoff-fill text-accent me-2 fs-3"></i>
+            <span>CrowdFund</span><span class="text-emerald ms-1">Egypt</span>
+        </a>
+
+        <!-- Mobile Toggler -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Menu -->
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <!-- Search Bar (Title or Tag) -->
+            <form class="d-flex mx-lg-auto my-2 my-lg-0 position-relative" style="max-width: 380px; width: 100%;" action="{% url 'home' %}" method="GET">
+                <span class="search-icon-wrapper">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input class="form-control nav-search-input pe-3" type="search" name="q" placeholder="Search campaigns by title or #tag..." aria-label="Search" value="{{ request.GET.q|default:'' }}">
+            </form>
+
+            <!-- Links -->
+            <ul class="navbar-nav me-lg-3 mb-2 mb-lg-0 align-items-lg-center">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                        <i class="bi bi-house-door me-1"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'project_list' %}active{% endif %}" href="{% url 'project_list' %}">
+                        <i class="bi bi-grid me-1"></i> All Campaigns
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-tag me-1"></i> Categories
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark shadow-lg border-0" aria-labelledby="categoriesDropdown">
+                        {% for cat in nav_categories %}
+                            <li>
+                                <a class="dropdown-item py-2" href="{% url 'category_projects' cat.slug %}">
+                                    <i class="{{ cat.icon|default:'bi-folder' }} me-2 text-info"></i> {{ cat.name }}
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li><span class="dropdown-item text-muted">No categories available</span></li>
+                        {% endfor %}
+                    </ul>
+                <li class="nav-item">
+                    <a class="nav-link text-info d-flex align-items-center" href="javascript:void(0);" onclick="const b=document.getElementById('cf-chat-toggle-btn'); if(b) b.click();">
+                        <i class="bi bi-stars me-1 text-warning"></i> Ask AI
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Auth Buttons / User Profile -->
+            <div class="d-flex align-items-center gap-2">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'project_create' %}" class="btn btn-cf-accent btn-sm d-flex align-items-center">
+                        <i class="bi bi-plus-circle-fill me-1"></i> Start Campaign
+                    </a>
+                    
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle ms-2" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.first_name }}" class="rounded-circle border border-2 border-primary me-2" width="36" height="36" style="object-fit: cover;">
+                            <span class="fw-semibold d-none d-md-inline">{{ user.first_name }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg border-0" aria-labelledby="userMenu">
+                            <li class="px-3 py-2 border-bottom border-secondary text-muted small">
+                                Signed in as<br><strong class="text-white">{{ user.email }}</strong>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" href="{% url 'profile' %}">
+                                    <i class="bi bi-person-circle me-2 text-primary"></i> My Profile & Projects
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" href="{% url 'profile_edit' %}">
+                                    <i class="bi bi-pencil-square me-2 text-warning"></i> Edit Profile
+                                </a>
+                            </li>
+                            {% if user.is_staff %}
+                            <li>
+                                <a class="dropdown-item py-2 text-info" href="/admin/" target="_blank">
+                                    <i class="bi bi-shield-lock me-2"></i> Django Admin
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <a class="dropdown-item py-2 text-danger" href="{% url 'logout' %}">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Log Out
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm me-1 px-3">Log In</a>
+                    <a href="{% url 'register' %}" class="btn btn-cf-primary btn-sm px-3">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Results for "{{ query }}" | CrowdFund Egypt{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="section-header">
+        <h1 class="section-title">Search Results</h1>
+        <p class="section-subtitle">Showing campaigns matching title or tag: <strong class="text-primary">"{{ query }}"</strong></p>
+    </div>
+
+    <div class="row g-4">
+        {% for proj in projects %}
+        <div class="col-md-6 col-lg-4">
+            <div class="cf-card">
+                <div class="cf-card-img-wrapper">
+                    <img src="{% if proj.cover_image %}{{ proj.cover_image.url }}{% else %}{% static 'images/default-cover.jpg' %}{% endif %}" onerror="this.onerror=null; this.src='{% static 'images/default-cover.jpg' %}';" alt="{{ proj.title }}" class="cf-card-img">
+                    <span class="cf-badge-category">{{ proj.category.name }}</span>
+                </div>
+                <div class="cf-card-body">
+                    <h3 class="cf-card-title">
+                        <a href="{% url 'project_detail' proj.slug %}">{{ proj.title }}</a>
+                    </h3>
+                    <p class="small text-muted mb-3 flex-grow-1">{{ proj.details|truncatewords:14 }}</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center small text-muted mb-1">
+                        <span>Raised: <strong>{{ proj.current_donations }} EGP</strong></span>
+                        <span>{{ proj.percentage_raised }}%</span>
+                    </div>
+                    <div class="cf-progress-container">
+                        <div class="cf-progress-bar" style="width: {{ proj.percentage_raised }}%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                        <span class="small text-muted"><i class="bi bi-clock me-1"></i> {{ proj.days_left }} Days Left</span>
+                        <a href="{% url 'project_detail' proj.slug %}" class="btn btn-sm btn-cf-primary rounded-pill px-3">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="p-5 bg-white rounded-4 border shadow-sm max-w-md mx-auto">
+                <i class="bi bi-search fs-1 text-muted d-block mb-3"></i>
+                <h4 class="fw-bold">No campaigns found</h4>
+                <p class="text-muted mb-4">We couldn't find any projects matching "{{ query }}". Try searching for general terms like "tech", "charity", or "education".</p>
+                <a href="{% url 'home' %}" class="btn btn-cf-primary px-4">Back to Home</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

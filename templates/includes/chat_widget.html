@@ -1,0 +1,99 @@
+{% load static %}
+<!-- CrowdFund Egypt AI Assistant Chat Widget -->
+<div id="cf-ai-widget-container" class="cf-chat-container">
+    
+    <!-- Floating AI Toggle Button -->
+    <button id="cf-chat-toggle-btn" class="cf-chat-launcher" type="button" aria-label="Open Masry Fund AI Chatbot" title="Chat with Masry Fund AI">
+        <div class="cf-launcher-inner">
+            <i class="bi bi-stars cf-launcher-icon"></i>
+            <span class="cf-pulse-ring"></span>
+        </div>
+        <span class="cf-launcher-label d-none d-sm-inline ms-2">Ask AI</span>
+    </button>
+
+    <!-- Chat Window Card -->
+    <div id="cf-chat-window" class="cf-chat-window d-none">
+        
+        <!-- Chat Header -->
+        <div class="cf-chat-header">
+            <div class="d-flex align-items-center">
+                <div class="cf-ai-avatar">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div class="ms-2">
+                    <div class="cf-chat-title">Masry Fund AI <span class="badge bg-emerald-subtle text-emerald ms-1">Assistant</span></div>
+                    <div class="cf-chat-status">
+                        <span class="cf-status-dot"></span> Live Project Context
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-1">
+                <button id="cf-chat-clear-btn" class="btn btn-sm btn-icon text-white-50 hover-text-white" title="Clear Conversation" aria-label="Clear chat">
+                    <i class="bi bi-trash3"></i>
+                </button>
+                <button id="cf-chat-close-btn" class="btn btn-sm btn-icon text-white-50 hover-text-white" title="Minimize Chat" aria-label="Close chat">
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Starter Prompt Chips -->
+        <div class="cf-chat-chips-container" id="cf-chat-chips">
+            <div class="cf-chips-label"><i class="bi bi-lightbulb me-1"></i>Quick Topics:</div>
+            <div class="cf-chips-scroll">
+                <button class="cf-chip-btn" data-prompt="Show me active environmental and solar projects in Egypt.">
+                    🌱 Eco Projects
+                </button>
+                <button class="cf-chip-btn" data-prompt="What medical and hospital campaigns can I donate to?">
+                    🏥 Healthcare
+                </button>
+                <button class="cf-chip-btn" data-prompt="Which campaign has raised the most funds so far?">
+                    🔥 Top Funded
+                </button>
+                <button class="cf-chip-btn" data-prompt="How can I start a new crowdfunding campaign?">
+                    💡 Start Campaign
+                </button>
+                <button class="cf-chip-btn" data-prompt="What is the project cancellation policy?">
+                    📜 Cancellation Rules
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages Body -->
+        <div class="cf-chat-body" id="cf-chat-messages">
+            <!-- Welcome AI message -->
+            <div class="cf-message cf-msg-ai">
+                <div class="cf-msg-avatar"><i class="bi bi-robot"></i></div>
+                <div class="cf-msg-content">
+                    <p class="mb-1"><strong>Marhaban! 🇪🇬 I'm Masry Fund AI.</strong></p>
+                    <p class="mb-0">I can help you explore Egyptian campaigns, find causes to support, analyze project funding, and guide you through starting your own campaign.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator (Hidden by default) -->
+        <div id="cf-typing-indicator" class="cf-typing-indicator d-none">
+            <div class="cf-msg-avatar"><i class="bi bi-robot"></i></div>
+            <div class="cf-typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Chat Input Form -->
+        <form id="cf-chat-form" class="cf-chat-footer" autocomplete="off">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" id="cf-chat-input" class="form-control cf-chat-input" placeholder="Ask about campaigns, goals, categories..." maxlength="600" aria-label="Type a message">
+                <button type="submit" id="cf-chat-send-btn" class="btn btn-cf-send" aria-label="Send message">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+            <div class="cf-footer-note">
+                <span>Powered by Generative AI & Real-time CrowdFund Data</span>
+            </div>
+        </form>
+
+    </div>
+</div>

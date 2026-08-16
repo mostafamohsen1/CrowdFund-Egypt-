@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Fundraising Campaigns | CrowdFund Egypt{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h1 class="fw-bold mb-1">Explore Campaigns</h1>
+            <p class="text-muted mb-0">Discover and support inspiring initiatives across Egypt</p>
+        </div>
+        
+        <!-- Sorting dropdown -->
+        <div class="d-flex align-items-center gap-2">
+            <span class="small text-muted fw-semibold">Sort By:</span>
+            <div class="dropdown">
+                <button class="btn btn-white border dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if sort_by == 'popular' %}Most Popular
+                    {% elif sort_by == 'target' %}Highest Target
+                    {% elif sort_by == 'ending' %}Ending Soon
+                    {% else %}Latest First{% endif %}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                    <li><a class="dropdown-item {% if sort_by == 'latest' %}active{% endif %}" href="?sort=latest{% if selected_category %}&category={{ selected_category }}{% endif %}">Latest First</a></li>
+                    <li><a class="dropdown-item {% if sort_by == 'popular' %}active{% endif %}" href="?sort=popular{% if selected_category %}&category={{ selected_category }}{% endif %}">Most Popular</a></li>
+                    <li><a class="dropdown-item {% if sort_by == 'target' %}active{% endif %}" href="?sort=target{% if selected_category %}&category={{ selected_category }}{% endif %}">Highest Target</a></li>
+                    <li><a class="dropdown-item {% if sort_by == 'ending' %}active{% endif %}" href="?sort=ending{% if selected_category %}&category={{ selected_category }}{% endif %}">Ending Soon</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Pills Filter -->
+    <div class="d-flex flex-wrap gap-2 mb-4 pb-2 border-bottom">
+        <a href="{% url 'project_list' %}" class="btn btn-sm {% if not selected_category %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">All Categories</a>
+        {% for cat in categories %}
+            <a href="?category={{ cat.slug }}" class="btn btn-sm {% if selected_category == cat.slug %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+                <i class="{{ cat.icon|default:'bi-folder' }} me-1"></i> {{ cat.name }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Campaigns Grid -->
+    <div class="row g-4 mb-5">
+        {% for proj in page_obj %}
+        <div class="col-md-6 col-lg-4">
+            <div class="cf-card">
+                <div class="cf-card-img-wrapper">
+                    <img src="{% if proj.cover_image %}{{ proj.cover_image.url }}{% else %}{% static 'images/default-cover.jpg' %}{% endif %}" onerror="this.onerror=null; this.src='{% static 'images/default-cover.jpg' %}';" alt="{{ proj.title }}" class="cf-card-img">
+                    <span class="cf-badge-category">{{ proj.category.name }}</span>
+                    {% if proj.is_featured %}
+                        <span class="cf-badge-featured"><i class="bi bi-star-fill me-1"></i> Featured</span>
+                    {% endif %}
+                </div>
+                <div class="cf-card-body">
+                    <h3 class="cf-card-title">
+                        <a href="{% url 'project_detail' proj.slug %}">{{ proj.title }}</a>
+                    </h3>
+                    <p class="small text-muted mb-3 flex-grow-1">{{ proj.details|truncatewords:14 }}</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center small text-muted mb-1">
+                        <span><strong>{{ proj.current_donations }} EGP</strong> raised</span>
+                        <span>{{ proj.percentage_raised }}%</span>
+                    </div>
+                    <div class="cf-progress-container">
+                        <div class="cf-progress-bar" style="width: {{ proj.percentage_raised }}%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                        <span class="small text-muted"><i class="bi bi-clock me-1"></i> {{ proj.days_left }} Days Left</span>
+                        <a href="{% url 'project_detail' proj.slug %}" class="btn btn-sm btn-cf-primary rounded-pill px-3">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="p-5 bg-white rounded-4 border shadow-sm max-w-md mx-auto">
+                <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+                <h4 class="fw-bold">No campaigns found</h4>
+                <p class="text-muted mb-4">No active campaigns matched your selected filter.</p>
+                <a href="{% url 'project_list' %}" class="btn btn-outline-secondary">Reset Filters</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Controls -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link text-dark" href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}&sort={{ sort_by }}">Previous</a></li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link bg-dark border-dark">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link text-dark" href="?page={{ num }}{% if selected_category %}&category={{ selected_category }}{% endif %}&sort={{ sort_by }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link text-dark" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}&sort={{ sort_by }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+</div>
+{% endblock %}

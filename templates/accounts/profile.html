@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ profile_user.get_full_name }}'s Profile | CrowdFund Egypt{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Sidebar Profile Card -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden text-center p-4 bg-white">
+                <img src="{{ profile_user.profile_picture.url }}" alt="{{ profile_user.first_name }}" class="rounded-circle mx-auto mb-3 border border-3 border-primary shadow-sm" width="130" height="130" style="object-fit: cover;">
+                
+                <h4 class="fw-bold mb-1">{{ profile_user.get_full_name }}</h4>
+                <p class="text-muted small mb-3"><i class="bi bi-envelope me-1"></i> {{ profile_user.email }}</p>
+
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    <span class="badge bg-success-subtle text-success border border-success border-opacity-25 px-3 py-2">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified User
+                    </span>
+                </div>
+
+                <ul class="list-group list-group-flush text-start small mb-4">
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
+                        <span class="text-muted"><i class="bi bi-telephone me-2"></i> Mobile Phone</span>
+                        <strong class="text-dark">{{ profile_user.phone_number }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
+                        <span class="text-muted"><i class="bi bi-geo-alt me-2"></i> Country</span>
+                        <strong class="text-dark">{{ profile_user.country|default:'Egypt' }}</strong>
+                    </li>
+                    {% if profile_user.birthdate %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
+                        <span class="text-muted"><i class="bi bi-calendar-event me-2"></i> Birthdate</span>
+                        <strong class="text-dark">{{ profile_user.birthdate|date:"F j, Y" }}</strong>
+                    </li>
+                    {% endif %}
+                    {% if profile_user.facebook_profile %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
+                        <span class="text-muted"><i class="bi bi-facebook me-2"></i> Facebook</span>
+                        <a href="{{ profile_user.facebook_profile }}" target="_blank" class="text-truncate" style="max-width: 150px;">Profile Link</a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'profile_edit' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil-square me-1"></i> Edit Profile Information
+                    </a>
+                    
+                    <!-- Delete Account Trigger Modal Button -->
+                    <button type="button" class="btn btn-outline-danger btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                        <i class="bi bi-trash3 me-1"></i> Delete My Account
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area: My Projects & My Donations -->
+        <div class="col-lg-8">
+
+            <!-- Tab Navigation -->
+            <ul class="nav nav-pills mb-4 gap-2 bg-white p-2 rounded-3 border shadow-sm" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-semibold" id="projects-tab" data-bs-toggle="tab" data-bs-target="#projects-pane" type="button" role="tab" aria-controls="projects-pane" aria-selected="true">
+                        <i class="bi bi-rocket-takeoff me-1"></i> My Campaigns ({{ user_projects.count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold" id="donations-tab" data-bs-toggle="tab" data-bs-target="#donations-pane" type="button" role="tab" aria-controls="donations-pane" aria-selected="false">
+                        <i class="bi bi-heart me-1"></i> My Donations ({{ user_donations.count }})
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Projects Tab -->
+                <div class="tab-pane fade show active" id="projects-pane" role="tabpanel" aria-labelledby="projects-tab">
+                    <div class="row g-4">
+                        {% for proj in user_projects %}
+                        <div class="col-md-6">
+                            <div class="cf-card">
+                                <div class="cf-card-img-wrapper">
+                                    <img src="{% if proj.cover_image %}{{ proj.cover_image.url }}{% else %}{% static 'images/default-cover.jpg' %}{% endif %}" onerror="this.onerror=null; this.src='{% static 'images/default-cover.jpg' %}';" alt="{{ proj.title }}" class="cf-card-img">
+                                    {% if proj.is_cancelled %}
+                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3 px-3 py-2">Cancelled</span>
+                                    {% endif %}
+                                </div>
+                                <div class="cf-card-body">
+                                    <h5 class="fw-bold mb-2">
+                                        <a href="{% url 'project_detail' proj.slug %}" class="text-dark text-decoration-none">{{ proj.title }}</a>
+                                    </h5>
+                                    <div class="d-flex justify-content-between small text-muted mb-1">
+                                        <span>Target: {{ proj.total_target }} EGP</span>
+                                        <span>{{ proj.percentage_raised }}%</span>
+                                    </div>
+                                    <div class="cf-progress-container">
+                                        <div class="cf-progress-bar" style="width: {{ proj.percentage_raised }}%;"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                                        <span class="small text-muted">Raised: {{ proj.current_donations }} EGP</span>
+                                        <a href="{% url 'project_detail' proj.slug %}" class="btn btn-sm btn-outline-primary">Manage</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-center py-5 bg-white rounded-4 border">
+                            <i class="bi bi-rocket fs-1 text-muted d-block mb-2"></i>
+                            <p class="text-muted mb-3">You haven't created any campaigns yet.</p>
+                            <a href="{% url 'project_create' %}" class="btn btn-cf-primary btn-sm px-4">Start Your First Campaign</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Donations Tab -->
+                <div class="tab-pane fade" id="donations-pane" role="tabpanel" aria-labelledby="donations-tab">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col" class="py-3 px-4">Campaign</th>
+                                        <th scope="col" class="py-3">Amount</th>
+                                        <th scope="col" class="py-3">Date</th>
+                                        <th scope="col" class="py-3 text-end px-4">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for don in user_donations %}
+                                    <tr>
+                                        <td class="px-4 fw-semibold">
+                                            <a href="{% url 'project_detail' don.project.slug %}" class="text-decoration-none text-dark">{{ don.project.title }}</a>
+                                        </td>
+                                        <td><span class="badge bg-success-subtle text-success border border-success border-opacity-25 px-3 py-2 fs-6">+{{ don.amount }} EGP</span></td>
+                                        <td class="text-muted small">{{ don.donated_at|date:"M d, Y" }}</td>
+                                        <td class="text-end px-4">
+                                            <a href="{% url 'project_detail' don.project.slug %}" class="btn btn-sm btn-outline-secondary">View Project</a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">You haven't made any donations yet.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Delete Account Confirmation with Password -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold" id="deleteAccountModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Delete Account Confirmation
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'delete_account' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <p class="text-danger fw-bold">Are you absolutely sure you want to delete your account?</p>
+                    <p class="small text-muted">
+                        This action will permanently delete your user profile, created campaigns, and donation records. You cannot undo this step.
+                    </p>
+                    <div class="mb-3">
+                        <label for="delete_password_confirm" class="form-label fw-semibold">Please enter your password to confirm:</label>
+                        <input type="password" name="password" id="delete_password_confirm" class="form-control" placeholder="Current password" required>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Confirm & Delete Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
