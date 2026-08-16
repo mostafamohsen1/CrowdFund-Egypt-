@@ -10,3 +10,7 @@ python manage.py collectstatic --no-input
 
 # Apply database migrations
 python manage.py migrate
+
+# Populate sample categories, campaigns, and admin user
+python manage.py seed_data
+
